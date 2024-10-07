@@ -12,7 +12,7 @@ const Homepage = lazy(() => import('./components/homepage/Homepage'));
 const CounselorLogin = lazy(() => import('./components/Login/CounselorLogin/CounselorLogin'));
 const NewRegistrationForm = lazy(() => import('./components/Login/CounselorLogin/NewRegistration'));
 const MainProgram = lazy(() => import('./components/Login/CounselorLogin/MainProgram'));
-const DataAnalysis = lazy(() => import('./components/Login/CounselorLogin/DataAnalysis'));
+const DataAnalysis = lazy(() => import('./components/Login/CounselorLogin/BigdataAnalysis'));
 const AdminLoginForm = lazy(() => import('./components/Login/AdminLoginForm'));
 const LoginOptions = lazy(() => import('./components/auth/LoginOptions'));
 
