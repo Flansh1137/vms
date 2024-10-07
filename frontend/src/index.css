@@ -3,7 +3,24 @@
 @tailwind utilities;
 
 html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-}
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Stop horizontal scroll */
+  }
+  
+  body {
+    height: 100vh;
+    overflow-y: auto; /* Allow vertical scroll but hide scrollbar */
+  }
+  
+  body::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* Hide vertical scrollbar */
+  }
+  
+  /* Ensure that the container doesn't have overflow */
+  .container {
+    overflow-x: hidden; /* No horizontal overflow */
+    overflow-y: auto; /* Allows content to scroll vertically if needed */
+  }
+  

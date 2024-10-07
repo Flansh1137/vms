@@ -26,7 +26,7 @@ const NavWrapper = ({ children }) => {
     '/new-registration',
     '/counselor-login',
     '/login-options',
-    '/admin-login-form'
+    '/AdminLoginForm'
   ];
 
   // Check if the current route matches any of the minimalNavRoutes
@@ -50,7 +50,7 @@ const App = () => {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Homepage />} />
-              <Route path="/admin-login-form" element={<AdminLoginForm />} />
+              <Route path="/AdminLoginForm" element={<AdminLoginForm />} />
               <Route path="/login-options" element={<LoginOptions />} />
 
               {/* Private Routes */}
