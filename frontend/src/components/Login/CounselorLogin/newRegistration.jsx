@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { TextField, Button, Grid, Typography, Paper, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { TextField, Button, Grid, Typography, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import { Save as SaveIcon } from '@mui/icons-material';
-import { CameraAlt as CameraAltIcon } from '@mui/icons-material'; // Icon for Capture Images
+import { CameraAlt as CameraAltIcon } from '@mui/icons-material';
 import { PersonAdd as PersonAddIcon } from '@mui/icons-material';
 import CaptureImages from './captureImages'; // Import the Capture Images component
-import registrationImage from '../../../assets/registration.jpg'; // Background image
 
 const NewRegistrationForm = () => {
     const [formData, setFormData] = useState({
@@ -22,7 +21,7 @@ const NewRegistrationForm = () => {
         address: '',
     });
     const [showCapture, setShowCapture] = useState(false); // State to toggle Capture Images
-    const [imageData, setImageData] = useState([]); // State for image data
+    const [imageData, setImageData] = useState(null); // State for single image data
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
     const navigate = useNavigate();
@@ -38,7 +37,7 @@ const NewRegistrationForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/new-registration', formData);
+            const response = await axios.post('http://localhost:5000/new-registration', { ...formData, image: imageData });
             console.log('Form submitted successfully:', response.data);
             setMessage('Registration successful!');
             setIsError(false);
@@ -68,30 +67,23 @@ const NewRegistrationForm = () => {
         setShowCapture(false); // Close modal for image capture
     };
 
+    const handleImageCaptured = (image) => {
+        setImageData(image); // Store the captured image
+        setShowCapture(false); // Close capture dialog
+    };
+
+    const handleRetakeImage = () => {
+        setImageData(null); // Clear the captured image
+        setShowCapture(true); // Open capture dialog again
+    };
+
     return (
-        <div
-            className={`relative flex flex-col items-center justify-center min-h-screen ${
-                showCapture ? 'blur-md' : ''
-            }`} // Apply blur effect when modal is open
-            style={{
-                backgroundImage: `url(${registrationImage})`,
-                backgroundSize: 'cover',
-            }}
-        >
-            <Paper
-                elevation={3}
-                className="p-4 w-full max-w-4xl mx-4 md:mx-6 lg:mx-8 backdrop-filter backdrop-blur-lg"
-                style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.4)', // Semi-transparent white background
-                }}
-            >
+        <div className="flex flex-row min-h-screen">
+            {/* Form Section (80%) */}
+            <div className="flex flex-col w-4/5 p-8">
                 <div className="flex flex-col items-center mb-4">
                     <PersonAddIcon sx={{ fontSize: 50, color: '#007FFF' }} />
-                    <Typography
-                        variant="h4"
-                        className="font-bold mb-4"
-                        style={{ fontFamily: 'Arial, sans-serif', color: 'white' }}
-                    >
+                    <Typography variant="h4" className="font-bold mb-4">
                         New Registration Form
                     </Typography>
                 </div>
@@ -108,8 +100,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -120,8 +110,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -132,8 +120,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -144,8 +130,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -156,8 +140,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                         </Grid>
 
@@ -172,8 +154,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -184,8 +164,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -196,8 +174,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -208,8 +184,6 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                             <TextField
                                 fullWidth
@@ -220,13 +194,10 @@ const NewRegistrationForm = () => {
                                 variant="outlined"
                                 margin="normal"
                                 required
-                                InputLabelProps={{ style: { color: 'white' } }}
-                                InputProps={{ style: { color: 'white' } }}
                             />
                         </Grid>
                     </Grid>
                     <div className="flex justify-center mt-4 space-x-4">
-                        {/* Submit Button */}
                         <Button
                             type="submit"
                             variant="contained"
@@ -236,18 +207,37 @@ const NewRegistrationForm = () => {
                             Submit
                         </Button>
 
-                        {/* Capture Image Button */}
                         <Button
                             variant="outlined"
                             color="secondary"
                             startIcon={<CameraAltIcon />}
                             onClick={handleCaptureImage}
                         >
-                            Capture Images
+                            Capture Image
                         </Button>
                     </div>
+
+                    {/* Display captured image if available */}
+                    {imageData && (
+                        <div className="mt-4">
+                            <Typography variant="body1" className="text-center">
+                                Image Captured Successfully!
+                            </Typography>
+                            <img src={imageData} alt="Captured" className="mx-auto mt-2" style={{ maxWidth: '100%', height: 'auto' }} />
+                            <Button variant="outlined" color="secondary" onClick={handleRetakeImage} className="mt-2">
+                                Retake Image
+                            </Button>
+                        </div>
+                    )}
                 </form>
-            </Paper>
+            </div>
+
+            {/* Note Section (20%) */}
+            <div className="w-1/5 p-8 bg-gray-100 flex items-center justify-center">
+                <Typography variant="body1" className="text-center text-red-600">
+                    Please ensure all information entered is accurate and complete. This data will be stored securely but may be used for important health-related decisions. Providing incorrect or false information can lead to serious consequences.
+                </Typography>
+            </div>
 
             {/* Capture Images Modal */}
             <Dialog
@@ -255,13 +245,10 @@ const NewRegistrationForm = () => {
                 onClose={handleCloseCapture}
                 maxWidth="md"
                 fullWidth
-                PaperProps={{
-                    style: { backdropFilter: 'blur(10px)', backgroundColor: 'rgba(255, 255, 255, 0.85)' },
-                }}
             >
-                <DialogTitle>Capture Images</DialogTitle>
+                <DialogTitle>Capture Image</DialogTitle>
                 <DialogContent>
-                    <CaptureImages setImageData={setImageData} />
+                    <CaptureImages onImageCaptured={handleImageCaptured} />
                     <div className="mt-4 flex justify-center">
                         <Button
                             variant="contained"
@@ -276,9 +263,7 @@ const NewRegistrationForm = () => {
 
             {message && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-                    <div
-                        className={"p-6 rounded-lg text-center " + (isError ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700")}
-                    >
+                    <div className={`p-6 rounded-lg text-center ${isError ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
                         <p className="text-lg font-bold mb-4">{message}</p>
                     </div>
                 </div>

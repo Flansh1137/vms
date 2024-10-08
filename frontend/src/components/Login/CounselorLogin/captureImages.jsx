@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CaptureImages = ({ setImageData }) => {
     const webcamRef = useRef(null);
-    const [images, setImages] = useState([]);
-    const [currentImage, setCurrentImage] = useState(0);
+    const [capturedImage, setCapturedImage] = useState(null); // Store a single captured image
     const [name, setName] = useState('');
     const [id, setId] = useState('');
     const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -14,38 +13,43 @@ const CaptureImages = ({ setImageData }) => {
     const [isError, setIsError] = useState(false);
     const navigate = useNavigate();
 
+    // Capture a single image from the webcam
     const capture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
-        setImages((prevImages) => [...prevImages, imageSrc]);
-        setCurrentImage((prevImage) => prevImage + 1);
-        setImageData((prevData) => [...prevData, imageSrc]);
+        setCapturedImage(imageSrc); // Store the captured image
+        setImageData(imageSrc); // Pass the captured image to parent component
     };
 
+    // Handle image upload
     const handleUpload = async () => {
         try {
             const response = await axios.post('http://127.0.0.1:5000/upload-image', {
                 id,
                 name,
-                images,
+                image: capturedImage, // Upload only the captured image
             });
-            console.log('Images uploaded successfully:', response.data);
-            setImages([]);
-            setCurrentImage(0);
-            setMessage('Images uploaded successfully!');
+            console.log('Image uploaded successfully:', response.data);
+            setMessage('Image uploaded successfully!');
             setIsError(false);
             setTimeout(() => {
-                navigate('/Counselor-Login');
+                navigate('/Counselor-Login'); // Redirect after successful upload
             }, 2000);
         } catch (error) {
-            console.error('Error uploading images:', error);
-            setMessage('Error uploading images. Please try again.');
+            console.error('Error uploading image:', error);
+            setMessage('Error uploading image. Please try again.');
             setIsError(true);
         }
     };
 
+    // Form submit handler
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsFormSubmitted(true);
+    };
+
+    // Retake the image
+    const handleRetake = () => {
+        setCapturedImage(null); // Clear the captured image
     };
 
     return (
@@ -82,8 +86,9 @@ const CaptureImages = ({ setImageData }) => {
                 </form>
             ) : (
                 <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mx-4 md:mx-6 lg:mx-8">
-                    <h1 className="text-2xl font-bold mb-4">Capture Images</h1>
-                    {currentImage < 6 ? (
+                    <h1 className="text-2xl font-bold mb-4">Capture Image</h1>
+
+                    {!capturedImage ? (
                         <div className="flex flex-col items-center">
                             <Webcam
                                 audio={false}
@@ -95,27 +100,32 @@ const CaptureImages = ({ setImageData }) => {
                                 onClick={capture}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             >
-                                Capture Image {currentImage + 1}
+                                Capture Image
                             </button>
                         </div>
                     ) : (
-                        <div>
-                            <h2 className="text-xl font-bold mb-4">Captured Images</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                                {images.map((image, index) => (
-                                    <img key={index} src={image} alt={`Capture ${index + 1}`} className="w-full h-auto" />
-                                ))}
+                        <div className="flex flex-col items-center">
+                            <h2 className="text-xl font-bold mb-4">Captured Image</h2>
+                            <img src={capturedImage} alt="Captured" className="w-full h-auto mb-4" />
+                            <div className="flex space-x-4">
+                                <button
+                                    onClick={handleRetake}
+                                    className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                >
+                                    Retake Image
+                                </button>
+                                <button
+                                    onClick={handleUpload}
+                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                >
+                                    Upload Image
+                                </button>
                             </div>
-                            <button
-                                onClick={handleUpload}
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 mt-4 px-4 rounded focus:outline-none focus:shadow-outline"
-                            >
-                                Upload Images
-                            </button>
                         </div>
                     )}
                 </div>
             )}
+
             {message && (
                 <div
                     className={`absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50`}
