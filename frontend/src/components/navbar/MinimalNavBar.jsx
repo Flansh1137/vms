@@ -5,7 +5,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import BarChartIcon from '@mui/icons-material/BarChart'; // Updated icon for Data Analysis
+import BarChartIcon from '@mui/icons-material/BarChart'; // Icon for Data Analysis
+import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront'; // Icon for Live Video
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth0 } from '@auth0/auth0-react';
 import logo from '../../assets/logo.png'; // Path to your logo
@@ -25,7 +26,8 @@ const MinimalNavBar = () => {
     { text: 'Admin Login', path: '/AdminLoginForm', icon: <AdminPanelSettingsIcon /> },
     { text: 'New Registration', path: '/new-registration', icon: <AssignmentIcon /> },
     { text: 'Main Program', path: '/main-program', icon: <DashboardIcon /> },
-    { text: 'Data Analysis', path: '/data-analysis', icon: <BarChartIcon /> } // Updated to Data Analysis
+    { text: 'Data Analysis', path: '/data-analysis', icon: <BarChartIcon /> },
+    { text: 'Live Video', path: '/counselor-login', icon: <VideoCameraFrontIcon /> } // Added Live Video with icon
   ];
 
   return (
