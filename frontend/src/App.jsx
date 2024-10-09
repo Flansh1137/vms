@@ -4,7 +4,7 @@ import Footer from './components/footer/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css'; 
 import PrivateRoute from './components/auth/PrivateRoute';
-import AppNavBar from './components/navbar/AppNavBar';  // Normal navbar
+import NavBar from './components/navbar/navbar';
 import MinimalNavBar from './components/navbar/MinimalNavBar';  // Minimal navbar
 
 // Lazy load components for better performance
@@ -26,7 +26,7 @@ const NavWrapper = ({ children }) => {
     '/new-registration',
     '/counselor-login',
     '/login-options',
-    '/AdminLoginForm'
+    '/admin-login-form'
   ];
 
   // Check if the current route matches any of the minimalNavRoutes
@@ -34,8 +34,8 @@ const NavWrapper = ({ children }) => {
 
   return (
     <>
-      {/* Conditionally render the navbar */}
-      {isMinimalNavRoute ? <MinimalNavBar /> : <AppNavBar />}
+      {/* Always render NavBar for "/" */}
+      {location.pathname === '/' ? <NavBar /> : (isMinimalNavRoute ? <MinimalNavBar /> : <NavBar />)}
       {children}
     </>
   );
