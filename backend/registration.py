@@ -190,7 +190,6 @@ def data_analysis():
         print(f"Error: {e}")
         return jsonify({'error': 'Internal Server Error'}), 500
 
-# Corrected route and function name
 @app.route('/unknown-images-by-date', methods=['GET'])
 def unknown_images_by_date():
     global mydb
@@ -224,7 +223,39 @@ def unknown_images_by_date():
         print(f"Error: {e}\nTraceback: {traceback_str}")
         return jsonify({"error": str(e)}), 500
 
-# Route and function for fetching names by date
+@app.route('/known-images-by-date', methods=['GET'])
+def known_images_by_date():
+    global mydb
+    try:
+        date_str = request.args.get('date')
+        
+        if not date_str:
+            raise ValueError("Missing 'date' parameter")
+
+        date = pd.to_datetime(date_str, format='%Y-%m-%d').date()
+
+        if not mydb or not mydb.is_connected():
+            mydb = getconnection()
+        
+        if not mydb:
+            return jsonify({"error": "Database connection failed"}), 500
+
+        mycursor = mydb.cursor()
+
+        sql = 'SELECT DISTINCT KNOWN_IMAGE FROM LIVEVIDEODATA WHERE DATE(DATE_TIME)=%s'
+        mycursor.execute(sql, (date,))
+        results = mycursor.fetchall()
+
+        # Convert image bytes to base64
+        images = [base64.b64encode(img).decode('utf-8') for (img,) in results]
+
+        return jsonify(images), 200
+
+    except Exception as e:
+        traceback_str = traceback.format_exc()
+        print(f"Error: {e}\nTraceback: {traceback_str}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/names-by-date', methods=['GET'])
 def names_by_date():
     global mydb
@@ -244,7 +275,7 @@ def names_by_date():
 
         mycursor = mydb.cursor()
 
-        sql = 'SELECT DISTINCT MEM_NAME FROM LIVEVIDEODATA WHERE DATE(DATE_TIME) = %s'
+        sql = 'SELECT DISTINCT MEM_NAME FROM LIVEVIDEODATA WHERE DATE(DATE_TIME)=%s'
         mycursor.execute(sql, (date,))
         results = mycursor.fetchall()
 
@@ -258,4 +289,4 @@ def names_by_date():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(debug=True)

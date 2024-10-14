@@ -14,9 +14,9 @@ const DataAnalysis = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [data, setData] = useState({});
   const [unknownData, setUnknownData] = useState({});
-  const [names, setNames] = useState([]);
-  const [images, setImages] = useState([]);  // State for images
+  const [images, setImages] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [isKnownPeople, setIsKnownPeople] = useState(true);
 
   useEffect(() => {
     const today = new Date();
@@ -65,15 +65,20 @@ const DataAnalysis = () => {
     fetchUnknownData(item.selection.startDate, item.selection.endDate);
   };
 
-  const handleViewPeople = async (date) => {
+  const handleViewPeople = async (date, isKnown) => {
     try {
-      const response = await axios.get('http://localhost:5000/unknown-images-by-date', {
+      const url = isKnown
+        ? 'http://localhost:5000/known-images-by-date'
+        : 'http://localhost:5000/unknown-images-by-date';
+
+      const response = await axios.get(url, {
         params: {
           date: date,
         },
       });
-      setImages(response.data);  // Set the images array with the response data
+      setImages(response.data);
       setSelectedDate(date);
+      setIsKnownPeople(isKnown);
     } catch (error) {
       console.error('Error fetching images:', error);
     }
@@ -154,10 +159,10 @@ const DataAnalysis = () => {
               <li key={date} className="mb-2">
                 <span className="font-semibold">{date}</span>: {count} visits
                 <button
-                  onClick={() => handleViewPeople(date)}
+                  onClick={() => handleViewPeople(date, true)}
                   className="ml-4 text-blue-500 hover:underline"
                 >
-                  View People
+                  View Known People
                 </button>
               </li>
             ))}
@@ -171,10 +176,10 @@ const DataAnalysis = () => {
               <li key={date} className="mb-2">
                 <span className="font-semibold">{date}</span>: {count} visits
                 <button
-                  onClick={() => handleViewPeople(date)}
+                  onClick={() => handleViewPeople(date, false)}
                   className="ml-4 text-blue-500 hover:underline"
                 >
-                  View People
+                  View Unknown People
                 </button>
               </li>
             ))}
@@ -185,13 +190,18 @@ const DataAnalysis = () => {
       {images.length > 0 && selectedDate && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2">
-            Images of people who visited on {selectedDate}
+            {isKnownPeople
+              ? `Known People Images from ${selectedDate}`
+              : `Unknown People Images from ${selectedDate}`}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-0">
             {images.map((img, index) => (
-              <div key={index} className="border p-2">
-                <img src={`data:image/jpeg;base64,${img}`} alt={`Unknown person ${index}`} className="w-full h-auto" />
-              </div>
+              <img
+                key={index}
+                src={`data:image/jpeg;base64,${img}`}
+                alt={`Person ${index}`}
+                className="w-48 h-56 object-cover"
+              />
             ))}
           </div>
         </div>
