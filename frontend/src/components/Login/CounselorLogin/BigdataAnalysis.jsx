@@ -17,6 +17,7 @@ const DataAnalysis = () => {
   const [images, setImages] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [isKnownPeople, setIsKnownPeople] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(''); // State for error message
 
   useEffect(() => {
     const today = new Date();
@@ -76,11 +77,21 @@ const DataAnalysis = () => {
           date: date,
         },
       });
-      setImages(response.data);
+
+      if (response.data.length === 0) {
+        setImages([]); // Clear images if no images found
+        setErrorMessage(`No images found for ${format(new Date(date), 'MMM d, yyyy')}.`); // Set error message with date
+      } else {
+        setImages(response.data);
+        setErrorMessage(''); // Clear error message
+      }
+
       setSelectedDate(date);
       setIsKnownPeople(isKnown);
     } catch (error) {
       console.error('Error fetching images:', error);
+      setImages([]); // Clear images on error
+      setErrorMessage(`No images found for ${format(new Date(date), 'MMM d, yyyy')}.`); // Set error message with date
     }
   };
 
@@ -187,7 +198,11 @@ const DataAnalysis = () => {
         </div>
       </div>
 
-      {images.length > 0 && selectedDate && (
+      {errorMessage && ( // Display error message if exists
+        <div className="mt-6 text-red-500 text-center">{errorMessage}</div>
+      )}
+
+      {images.length > 0 && selectedDate && !errorMessage && ( // Only show images if there are images and no error
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-2">
             {isKnownPeople
