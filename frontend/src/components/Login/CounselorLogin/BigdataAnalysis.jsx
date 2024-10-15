@@ -196,12 +196,14 @@ const DataAnalysis = () => {
           </h2>
           <div className="grid grid-cols-3 md:grid-cols-5 gap-0">
             {images.map((img, index) => (
-              <img
-                key={index}
-                src={`data:image/jpeg;base64,${img}`}
-                alt={`Person ${index}`}
-                className="w-48 h-56 object-cover"
-              />
+              <div key={index} className="flex flex-col items-center">
+                <img
+                  src={`data:image/jpeg;base64,${img.image}`}
+                  alt={`Person ${index}`}
+                  className="w-48 h-56 object-cover mb-2"
+                />
+                <span className="text-center">{img.name}</span>
+              </div>
             ))}
           </div>
         </div>
